@@ -20,7 +20,7 @@ class AppTheme {
           elevation: 0,
           // ignore: deprecated_member_use
           textTheme: const TextTheme(
-            headline5: TextStyle(
+            headlineSmall: TextStyle(
                 color: Colors.black, fontSize: 26, fontStyle: FontStyle.normal),
           )),
       tabBarTheme: TabBarTheme(
