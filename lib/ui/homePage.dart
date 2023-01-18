@@ -15,6 +15,15 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
+  final List<Widget> screens = const[
+    ArticlePage(),
+    SearchPage(),
+    IdentifyPage(),
+    NotePage(),
+    ProfilePage(),
+  ]; // to store nested tabs
+  final PageStorageBucket bucket = PageStorageBucket();
+  Widget currentScreen = const ArticlePage(); // Our first view in viewport
   final _pageController = PageController(
     //初始索引
     initialPage: 0,
@@ -26,6 +35,7 @@ class _HomePageState extends State<HomePage> {
     /// 销毁 PageView 控制器
     _pageController.dispose();
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -39,13 +49,7 @@ class _HomePageState extends State<HomePage> {
           });
         },
         //设置组件数组
-        children: const [
-          ArticlePage(),
-          SearchPage(),
-          IdentifyPage(),
-          NotePage(),
-          ProfilePage(),
-        ],
+        children: screens,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => onTap(2),
