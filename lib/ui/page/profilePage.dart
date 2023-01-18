@@ -9,6 +9,7 @@ import 'package:plant_disease_identification_app/config/net_config.dart';
 import 'package:plant_disease_identification_app/state/global.dart';
 import 'package:plant_disease_identification_app/state/profileChangeNotifier.dart';
 import 'package:plant_disease_identification_app/ui/homePage.dart';
+import 'package:plant_disease_identification_app/ui/page/identifyDetailPage.dart';
 import 'package:plant_disease_identification_app/ui/page/themeChangePage.dart';
 import 'package:plant_disease_identification_app/utils/toast.dart';
 import 'package:plant_disease_identification_app/widgets/myListTile.dart';
@@ -345,6 +346,12 @@ class _ProfilePageState extends State<ProfilePage>
         double globalPositionX = details.globalPosition.dx;
         double globalPositionY = details.globalPosition.dy + 10;
         onLongPress(context, globalPositionX, globalPositionY, 1);
+      },
+      onTap: (){
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (context) => const IdentifyDetailPage()));
       },
       child: Card(
         shape: RoundedRectangleBorder(

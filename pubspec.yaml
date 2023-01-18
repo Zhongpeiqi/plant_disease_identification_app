@@ -51,6 +51,7 @@ dependencies:
   oktoast:
   flutter_spinkit:
   extended_image:
+  webview_flutter: ^3.0.2
 
 dev_dependencies:
   flutter_test:

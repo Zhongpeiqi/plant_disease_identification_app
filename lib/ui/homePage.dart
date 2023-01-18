@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:plant_disease_identification_app/config/my_icon.dart';
 import 'package:plant_disease_identification_app/data/tabData.dart';
 import 'package:plant_disease_identification_app/ui/page/articlePage.dart';
 import 'package:plant_disease_identification_app/ui/page/identifyPage.dart';
@@ -55,7 +56,7 @@ class _HomePageState extends State<HomePage> {
         onPressed: () => onTap(2),
         backgroundColor: Colors.green,
         child: const Icon(
-          Icons.add,
+          MyIcons.scan,
           color: Colors.white,
         ),
       ),
