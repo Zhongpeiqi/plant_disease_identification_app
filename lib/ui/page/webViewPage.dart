@@ -17,8 +17,8 @@ class WebViewPage extends StatefulWidget {
 class WebViewPageState extends State<WebViewPage> {
   final String url;
   final String title;
-
   WebViewPageState(this.url, this.title);
+  late WebViewController controller;
 
   @override
   void initState() {
@@ -33,12 +33,37 @@ class WebViewPageState extends State<WebViewPage> {
         appBar: AppBar(
           title: Text(title),
           centerTitle: true,
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
+              onPressed: () async{
+                if(await controller.canGoBack()){
+                  controller.goBack();
+                }
+              },
+            ),
+            IconButton(
+              icon: const Icon(
+                Icons.refresh,
+                color: Colors.white,
+              ),
+              onPressed: (){
+                controller.reload();
+              },
+            ),
+          ],
         ),
         body: Column(children: [
           Expanded(
               child: WebView(
                   initialUrl: url,
-                  javascriptMode: JavascriptMode.unrestricted
+                  javascriptMode: JavascriptMode.unrestricted,
+                  onWebViewCreated: (controller){
+                    this.controller = controller;
+                  },
               )
           )
         ])
