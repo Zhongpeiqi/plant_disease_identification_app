@@ -71,6 +71,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.4.1"
+  extended_list:
+    dependency: transitive
+    description:
+      name: extended_list
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  extended_list_library:
+    dependency: transitive
+    description:
+      name: extended_list_library
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   extended_nested_scroll_view:
     dependency: "direct main"
     description:
@@ -244,6 +258,20 @@ packages:
     dependency: transitive
     description:
       name: lints
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.1"
+  loading_more_list:
+    dependency: "direct main"
+    description:
+      name: loading_more_list
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.2"
+  loading_more_list_library:
+    dependency: transitive
+    description:
+      name: loading_more_list_library
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
@@ -504,6 +532,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.3"
+  waterfall_flow:
+    dependency: transitive
+    description:
+      name: waterfall_flow
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.2"
   webview_flutter:
     dependency: "direct main"
     description:

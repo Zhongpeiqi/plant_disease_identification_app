@@ -4,7 +4,7 @@ import 'package:plant_disease_identification_app/data/tabData.dart';
 import 'package:plant_disease_identification_app/ui/page/articlePage.dart';
 import 'package:plant_disease_identification_app/ui/page/identifyPage.dart';
 import 'package:plant_disease_identification_app/ui/page/notePage.dart';
-import 'package:plant_disease_identification_app/ui/page/profilePage.dart';
+import 'package:plant_disease_identification_app/ui/page/minePage.dart';
 import 'package:plant_disease_identification_app/ui/page/searchPage.dart';
 
 class HomePage extends StatefulWidget {
@@ -21,7 +21,7 @@ class _HomePageState extends State<HomePage> {
     SearchPage(),
     IdentifyPage(),
     NotePage(),
-    ProfilePage(),
+    MinePage(),
   ]; // to store nested tabs
   final PageStorageBucket bucket = PageStorageBucket();
   Widget currentScreen = const ArticlePage(); // Our first view in viewport
