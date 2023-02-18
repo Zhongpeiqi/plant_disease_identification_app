@@ -19,7 +19,7 @@ import 'package:plant_disease_identification_app/widgets/showDialog.dart';
 import 'package:provider/provider.dart';
 
 class MinePage extends StatefulWidget {
-  const MinePage({super.key, int? userId});
+  const MinePage({super.key, int? userId, String? username});
 
   @override
   State<StatefulWidget> createState() {
@@ -66,7 +66,6 @@ class _MinePageState extends State<MinePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    ScreenUtil.init(context, designSize: const Size(1080, 1920));
     return Scaffold(
       appBar: AppBar(
         elevation: 0,

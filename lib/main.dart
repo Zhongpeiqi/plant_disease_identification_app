@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:plant_disease_identification_app/state/global.dart';
@@ -20,7 +21,6 @@ void main() {
   //锁定竖屏
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
-
   return runApp(
       MultiProvider(
         providers: [
@@ -36,23 +36,31 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OKToast(
-      dismissOtherOnShow: true,
-      child: Consumer<ThemeModel>(
-        builder: (context,ThemeModel themeModel,_){
-          return GetMaterialApp(
-            title: 'Leaf disease detection',
-            debugShowCheckedModeBanner: false,
-            home: const HomePage(),
-            theme: themeModel.isDark
-                ? ThemeData(brightness: Brightness.dark)
-                : ThemeData(primarySwatch: createMaterialColor(themeModel.theme),
-                scaffoldBackgroundColor: const Color(0xfff2f2f6)
-            ),
-          );
-        },
-      ),
+    return ScreenUtilInit(
+        designSize: const Size(1080, 1920),
+      minTextAdapt: true,
+      splitScreenMode: true,
+      builder: (context,child){
+        return OKToast(
+          dismissOtherOnShow: true,
+          child: Consumer<ThemeModel>(
+            builder: (context,ThemeModel themeModel,_){
+              return GetMaterialApp(
+                title: 'Leaf disease detection',
+                debugShowCheckedModeBanner: false,
+                home: const HomePage(),
+                theme: themeModel.isDark
+                    ? ThemeData(brightness: Brightness.dark)
+                    : ThemeData(primarySwatch: createMaterialColor(themeModel.theme),
+                    scaffoldBackgroundColor: const Color(0xfff2f2f6)
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
+
   }
 }
 

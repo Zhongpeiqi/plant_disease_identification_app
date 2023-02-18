@@ -53,6 +53,8 @@ dependencies:
   extended_image:
   webview_flutter: ^3.0.2
   loading_more_list:
+  extended_text:
+  extended_text_field:
 
 dev_dependencies:
   flutter_test:

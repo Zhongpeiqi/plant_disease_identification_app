@@ -1,0 +1,61 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:loading_more_list/loading_more_list.dart';
+
+import '../../../listRepository/postRepository.dart';
+import '../../../model/post.dart';
+import '../../../state/global.dart';
+import '../../../widgets/listIndicator.dart';
+import '../../../widgets/postCard.dart';
+
+class CommonPostPage extends StatefulWidget {
+  final int type;
+  final String str;
+  final String orderBy;
+  const CommonPostPage({Key? key, required this.type, required this.str, required this.orderBy}) : super(key: key);
+  @override
+  State<StatefulWidget> createState() {
+    return _CommonPostPageState();
+  }
+}
+
+class _CommonPostPageState extends State<CommonPostPage> {
+  late PostRepository _postRepository;
+  @override
+  void initState() {
+    super.initState();
+    _postRepository =  PostRepository(Global.profile.user!.userId,
+        widget.type);
+  }
+
+  @override
+  void dispose() {
+    _postRepository.dispose();
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: _postRepository.refresh,
+        child: LoadingMoreList(
+          ListConfig<Post>(
+            itemBuilder: (BuildContext context, Post item, int index){
+              return PostCard(post: item,list: _postRepository,index: index);
+            },
+            sourceList: _postRepository,
+            indicatorBuilder: _buildIndicator,
+            padding: EdgeInsets.only(
+                top:ScreenUtil().setWidth(20),
+                left: ScreenUtil().setWidth(20),
+                right: ScreenUtil().setWidth(20)
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+  Widget _buildIndicator(BuildContext context, IndicatorStatus status) {
+    return buildIndicator(context, status, _postRepository);
+  }
+}
