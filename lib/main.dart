@@ -6,7 +6,7 @@ import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:plant_disease_identification_app/state/global.dart';
 import 'package:plant_disease_identification_app/state/profileChangeNotifier.dart';
-import 'package:plant_disease_identification_app/ui/homePage.dart';
+import 'package:plant_disease_identification_app/ui/page/auth/signin.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -48,7 +48,7 @@ class MyApp extends StatelessWidget {
               return GetMaterialApp(
                 title: 'Leaf disease detection',
                 debugShowCheckedModeBanner: false,
-                home: const HomePage(),
+                home: const SignIn(),
                 theme: themeModel.isDark
                     ? ThemeData(brightness: Brightness.dark)
                     : ThemeData(primarySwatch: createMaterialColor(themeModel.theme),

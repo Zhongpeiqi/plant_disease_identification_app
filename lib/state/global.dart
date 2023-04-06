@@ -22,17 +22,14 @@ class Global {
   static List<MaterialColor> get themes => _themes;
 
   static Future init() async {
-
     _prefs = await SharedPreferences.getInstance();
     //初始化加载profile
-    var profile = _prefs.getString("profile");
-    //Log().i(_profile);
-    if (profile != null) {
-      try {
-        profile = Profile.fromJson(jsonDecode(profile)) as String;
-      } catch (e) {
-        Log().i(e);
-      }
+    var _profile = _prefs.getString("profile");
+    try {
+      profile = Profile.fromJson(jsonDecode(_profile!));
+      profile.historyList = [];
+    } catch (e) {
+      Log().i(e);
     }
   }
 

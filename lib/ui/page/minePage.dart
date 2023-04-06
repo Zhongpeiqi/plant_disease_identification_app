@@ -3,13 +3,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:plant_disease_identification_app/config/my_icon.dart';
-import 'package:plant_disease_identification_app/config/net_config.dart';
-import 'package:plant_disease_identification_app/state/global.dart';
+import 'package:plant_disease_identification_app/net/NetRequester.dart';
 import 'package:plant_disease_identification_app/state/profileChangeNotifier.dart';
-import 'package:plant_disease_identification_app/ui/homePage.dart';
-import 'package:plant_disease_identification_app/ui/page/identifyDetailPage.dart';
+import 'package:plant_disease_identification_app/ui/page/feed/articlePage.dart';
 import 'package:plant_disease_identification_app/ui/page/settingPage.dart';
 import 'package:plant_disease_identification_app/ui/page/themeChangePage.dart';
 import 'package:plant_disease_identification_app/ui/page/updateUserDetailPage.dart';
@@ -17,6 +14,13 @@ import 'package:plant_disease_identification_app/utils/toast.dart';
 import 'package:plant_disease_identification_app/widgets/myListTile.dart';
 import 'package:plant_disease_identification_app/widgets/showDialog.dart';
 import 'package:provider/provider.dart';
+
+import '../../model/disease.dart';
+import '../../model/history.dart';
+import '../../net/Api.dart';
+import '../../net/BaseBean.dart';
+import '../../state/global.dart';
+import 'identifyDetailPage.dart';
 
 class MinePage extends StatefulWidget {
   const MinePage({super.key, int? userId, String? username});
@@ -32,8 +36,24 @@ class _MinePageState extends State<MinePage>
   late bool _offLittleAvatar;
   late ScrollController _scrollController;
 
+  //刷新列表
+  Future refreshHistory() async {
+    Global.profile.historyList!.clear();
+    Global.saveProfile();
+    var res = await NetRequester.dio
+        .post(Api.queryHistoryByUserId(Global.profile.user!.id!));
+    var data = res.data['data'];
+    for (var item in data) {
+      var history = History.fromJson(item);
+      Global.profile.historyList?.add(history);
+    }
+    Global.saveProfile();
+    setState(() {});
+  }
+
   @override
   void initState() {
+    refreshHistory();
     super.initState();
     _scrollController = ScrollController();
     _offLittleAvatar = true;
@@ -68,6 +88,7 @@ class _MinePageState extends State<MinePage>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         elevation: 0,
         title: Offstage(
           offstage: _offLittleAvatar,
@@ -75,11 +96,7 @@ class _MinePageState extends State<MinePage>
             width: ScreenUtil().setWidth(90),
             height: ScreenUtil().setWidth(90),
             child: CircleAvatar(
-              backgroundImage: Global.profile.user?.avatarUrl == null
-                  ? const AssetImage("assets/img/author.png")
-                  : NetworkImage(
-                          '${NetConfig.ip}/images/${Global.profile.user!.avatarUrl}')
-                      as ImageProvider,
+              backgroundImage: NetworkImage(Global.profile.user!.avatarUrl!),
             ),
           ),
         ),
@@ -97,7 +114,7 @@ class _MinePageState extends State<MinePage>
                 color: Colors.white,
               ),
               onPressed: () {
-                Get.to(() =>  const SettingPage());
+                Get.to(() => const SettingPage());
               },
             ),
           ),
@@ -148,11 +165,10 @@ class _MinePageState extends State<MinePage>
                           height: 80,
                           width: 80,
                           child: CircleAvatar(
-                            backgroundImage: Global.profile.user?.avatarUrl ==
+                            backgroundImage: Global.profile.user!.avatarUrl ==
                                     null
                                 ? const AssetImage("assets/img/author.png")
-                                : NetworkImage(
-                                        '${NetConfig.ip}/images/${Global.profile.user!.avatarUrl}')
+                                : NetworkImage(Global.profile.user!.avatarUrl!)
                                     as ImageProvider,
                           ),
                         ),
@@ -164,7 +180,7 @@ class _MinePageState extends State<MinePage>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              "张三",
+                              model.user.username ?? "张三",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
@@ -218,20 +234,22 @@ class _MinePageState extends State<MinePage>
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    _buildShowNum('0', '记录', const HomePage()),
+                    _buildShowNum(
+                        Global.profile.user!.postNum.toString(), '记录', 1),
                     Container(
                         height: 30,
                         decoration: BoxDecoration(
                             border: Border.all(
                                 color: Colors.grey[300]!, width: 0.5))),
-                    _buildShowNum('0', '识别', const HomePage()),
+                    _buildShowNum('0', '识别', 2),
                     Container(
                       height: 30,
                       decoration: BoxDecoration(
                           border:
                               Border.all(color: Colors.grey[300]!, width: 0.5)),
                     ),
-                    _buildShowNum('0', '获赞', const HomePage()),
+                    _buildShowNum(
+                        Global.profile.user!.likedNum.toString(), '点赞', 3),
                   ],
                 ),
               ),
@@ -243,10 +261,26 @@ class _MinePageState extends State<MinePage>
   }
 
   //显示动态数量等的小部件
-  Widget _buildShowNum(String num, String label, Widget page) {
+  Widget _buildShowNum(String num, String label, int type) {
     return TextButton(
       onPressed: () {
-        Navigator.push(context, CupertinoPageRoute(builder: (context) => page));
+        switch (type) {
+          case 1:
+            Get.to(() => ArticlePage(
+                  userId: Global.profile.user!.id,
+                  type: 5,
+                ));
+            break;
+          case 2:
+            // Get.to(() => const ArticlePage(type: 5,));
+            break;
+          case 3:
+            Get.to(() => ArticlePage(
+                  userId: Global.profile.user!.id,
+                  type: 4,
+                ));
+            break;
+        }
       },
       child: SizedBox(
         height: 80,
@@ -287,10 +321,9 @@ class _MinePageState extends State<MinePage>
                       color: Colors.redAccent,
                     ),
                     '我的点赞', () {
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (context) => const HomePage()));
+                  Get.to(() => const ArticlePage(
+                        type: 4,
+                      ));
                 }),
                 _buildGridItem(
                     const Icon(
@@ -348,128 +381,148 @@ class _MinePageState extends State<MinePage>
         double globalPositionY = details.globalPosition.dy + 10;
         onLongPress(context, globalPositionX, globalPositionY, 1);
       },
-      onTap: (){
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (context) => const IdentifyDetailPage()));
-      },
+      onTap: () {},
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(ScreenUtil().setWidth(21)),
         ),
         margin: EdgeInsets.symmetric(
             horizontal: ScreenUtil().setWidth(24), vertical: 10),
-        child: Column(
-          children: <Widget>[
-            MyListTile(
-                left: 40,
-                leading: Text(
-                  '识别历史',
-                  style: TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.normal,
-                      fontSize: ScreenUtil().setSp(54)),
-                ),
-                trailing: SizedBox(
-                  height: ScreenUtil().setHeight(70),
-                  child: Row(
-                    children: [
-                      IconButton(
-                        padding: const EdgeInsets.all(0),
-                        splashRadius: 25.0,
-                        onPressed: () {
-                          _showDialog(context);
-                        },
-                        icon: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.red,
-                          size: 27,
-                        ),
-                      )
-                    ],
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              MyListTile(
+                  left: 40,
+                  leading: Text(
+                    '识别历史',
+                    style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.normal,
+                        fontSize: ScreenUtil().setSp(54)),
                   ),
-                )),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-            _buildHistoryItem(),
-          ],
+                  trailing: SizedBox(
+                    height: ScreenUtil().setHeight(70),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          padding: const EdgeInsets.all(0),
+                          splashRadius: 25.0,
+                          onPressed: () async{
+                            refreshHistory();
+                          },
+                          icon: const Icon(
+                            Icons.refresh,
+                            color: Colors.green,
+                            size: 27,
+                          ),
+                        ),
+                        IconButton(
+                          padding: const EdgeInsets.all(0),
+                          splashRadius: 25.0,
+                          onPressed: () {
+                            _showDialog(context);
+                          },
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                            size: 27,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+              SizedBox(
+                height: ScreenUtil().setHeight(800),
+                child: ListView.builder(
+                    itemCount: Global.profile.historyList?.length,
+                    scrollDirection: Axis.vertical,
+                    itemBuilder: (context, index) => _buildHistoryItem(
+                        Global.profile.historyList![index].date!,
+                        Global.profile.historyList![index].imageUrl!,
+                        Global.profile.historyList![index].name!,
+                        (Global.profile.historyList![index].accuracy!/100),
+                        Global.profile.historyList![index].tag!
+                    )),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildHistoryItem() {
+  Widget _buildHistoryItem(String date, String imgUrl, String name,double accuracy,int tag) {
     return MyListTile(
       left: 40,
+      onTap: () async{
+        var response = await NetRequester.dio
+            .post(Api.getDiseaseById(tag));
+        var data = BaseBean.fromJson(response.data);
+        if (data.status == 200 && data.data != null) {
+          var disease = Disease.fromJson(data.data);
+          disease.accuracy = (accuracy*100).toInt();
+          disease.imgUrl = imgUrl;
+          disease.date = date;
+          Get.to(() => IdentifyDetailPage(disease: disease));
+        }
+      },
       leading: Column(
         children: [
           Text(
-            '2023/01/18',
+            date,
             style: TextStyle(
-                color: Colors.black54, fontSize: ScreenUtil().setSp(30),fontWeight: FontWeight.w600),
+                color: Colors.black54,
+                fontSize: ScreenUtil().setSp(30),
+                fontWeight: FontWeight.w600),
           ),
-          SizedBox(height: ScreenUtil().setHeight(6),),
-          ExtendedImage.asset(
-            "assets/img/example1.jpg",
+          SizedBox(
+            height: ScreenUtil().setHeight(6),
+          ),
+          ExtendedImage.network(imgUrl,
               width: 100,
               height: 100,
               fit: BoxFit.cover,
               shape: BoxShape.rectangle,
-              border: Border.all(color: Colors.black12,width: 1),
-              borderRadius: BorderRadius.circular(ScreenUtil().setWidth(21))
-          ),
+              border: Border.all(color: Colors.black12, width: 1),
+              borderRadius: BorderRadius.circular(ScreenUtil().setWidth(21))),
         ],
       ),
       center: SizedBox(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(height: ScreenUtil().setHeight(35),),
             SizedBox(
-              width: ScreenUtil().setWidth(600),
-              child: Text(
-                '水稻',
-                style: TextStyle(
-                    color: Colors.blueGrey, fontSize: ScreenUtil().setSp(45)),
-                overflow: TextOverflow.ellipsis,
+              height: ScreenUtil().setHeight(100),
+            ),
+            Container(
+              width: ScreenUtil().setWidth(500),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Container(
+                    width: ScreenUtil().setWidth(500),
+                    child: Text(
+                      name,
+                      style: TextStyle(fontSize: ScreenUtil().setSp(64)),
+                      overflow: TextOverflow.ellipsis,
+                      softWrap: false,
+                      maxLines: 1,
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(height: ScreenUtil().setHeight(15),),
             SizedBox(
-              width: ScreenUtil().setWidth(600),
-              child: Text(
-                '叶片、茎秆、穗部',
-                style: TextStyle(
-                    color: Colors.blueGrey, fontSize: ScreenUtil().setSp(45)),
-                overflow: TextOverflow.ellipsis,
-              ),
+              height: ScreenUtil().setHeight(15),
             ),
-            SizedBox(height: ScreenUtil().setHeight(15),),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  '水稻稻瘟病',
-                  style: TextStyle(fontSize: ScreenUtil().setSp(64)),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-            SizedBox(height: ScreenUtil().setHeight(15),),
             SizedBox(
-              width: ScreenUtil().setWidth(600),
+              width: ScreenUtil().setWidth(500),
               child: Text(
-                'PyriculariaoryaeCav',
+                '置信度${accuracy.toStringAsFixed(2)}%',
                 style: TextStyle(
-                    color: Colors.blueGrey, fontSize: ScreenUtil().setSp(50),fontStyle: FontStyle.italic),
+                    color: Colors.blueGrey,
+                    fontSize: ScreenUtil().setSp(50),
+                    fontStyle: FontStyle.italic),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -484,8 +537,17 @@ class _MinePageState extends State<MinePage>
         context: context,
         builder: (context) => MyDialog(
               text: "是否清空所有记录",
-              onPress: () {
-                Toast.popToast("清空成功");
+              onPress: () async {
+                var res = await NetRequester.dio
+                    .post(Api.deleteAll(Global.profile.user!.id!));
+                if (res.data['status'] == 200) {
+                  Global.profile.historyList?.clear();
+                  Global.saveProfile();
+                  setState(() {});
+                  Toast.popToast("清空成功");
+                } else {
+                  Toast.popToast("清空失败");
+                }
                 Navigator.of(context).pop();
               },
             ));
@@ -494,7 +556,8 @@ class _MinePageState extends State<MinePage>
   //长按触发弹出菜单
   void onLongPress(BuildContext context, double x, double y, int index) {
     //当添加图片当图片被点击时候
-    final RenderBox overlay = Overlay.of(context)?.context.findRenderObject() as RenderBox;
+    final RenderBox overlay =
+        Overlay.of(context)?.context.findRenderObject() as RenderBox;
     RelativeRect position = RelativeRect.fromRect(
       Rect.fromLTRB(x, y, x + 50, y - 50),
       Offset.zero & overlay.size,
@@ -514,22 +577,27 @@ class _MinePageState extends State<MinePage>
         ],
       ),
     );
-    List<PopupMenuEntry<dynamic>> list = [
-      deleteItem
-    ]; //菜单栏需要显示的菜单项集合
+    List<PopupMenuEntry<dynamic>> list = [deleteItem]; //菜单栏需要显示的菜单项集合
     showMenu(context: context, position: position, items: list).then((value) {
       if (value == "delete") {
         showDialog(
             context: context,
             builder: (context) => MyDialog(
-              text: "是否删除该识别记录",
-              onPress: () {
-                Toast.popToast("删除成功");
-                Navigator.of(context).pop();
-              },
-            ));
-      } else if (value == "update") {
-
+                  text: "是否删除该识别记录",
+                  onPress: () async {
+                    var res = await NetRequester.dio.post(
+                        Api.delete(Global.profile.historyList![index].id!));
+                    if (res.data['status'] == 200) {
+                      Toast.popToast("删除成功");
+                      Global.profile.historyList?.removeAt(index);
+                      Global.saveProfile();
+                      setState(() {});
+                    } else {
+                      Toast.popToast("删除失败");
+                    }
+                    Navigator.of(context).pop();
+                  },
+                ));
       }
     });
     // PopupMenuButton

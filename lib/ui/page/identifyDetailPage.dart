@@ -1,13 +1,17 @@
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:plant_disease_identification_app/config/my_icon.dart';
-import 'package:plant_disease_identification_app/ui/page/webViewPage.dart';
-import 'package:plant_disease_identification_app/widgets/myListTile.dart';
 import 'package:get/get.dart';
+import 'package:plant_disease_identification_app/config/my_icon.dart';
+import 'package:plant_disease_identification_app/model/disease.dart';
+import 'package:plant_disease_identification_app/ui/page/webViewPage.dart';
+import '../../widgets/customFlatButton.dart';
+import 'feedBackPage.dart';
 
 class IdentifyDetailPage extends StatefulWidget {
-  const IdentifyDetailPage({Key? key}) : super(key: key);
+  final Disease disease;
+
+  const IdentifyDetailPage({Key? key, required this.disease}) : super(key: key);
 
   @override
   State<IdentifyDetailPage> createState() => _IdentifyDetailPageState();
@@ -16,157 +20,279 @@ class IdentifyDetailPage extends StatefulWidget {
 class _IdentifyDetailPageState extends State<IdentifyDetailPage> {
   @override
   Widget build(BuildContext context) {
+    var res = widget.disease.accuracy! / 100;
+    var accuracy = res.toStringAsFixed(2);
     return Scaffold(
       appBar: AppBar(
         title: const Text("识别记录详情"),
         centerTitle: true,
         elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(-8),
-          child: Container(),
-        ),
         actions: <Widget>[
           Container(
             margin: EdgeInsets.only(right: ScreenUtil().setWidth(24)),
             child: IconButton(
               icon: const Icon(
-                MyIcons.setting,
+                MyIcons.comment,
                 color: Colors.white,
               ),
-              onPressed: () {},
+              onPressed: () {
+                Get.to(() => const FeedBackPage(
+                    "https://support.qq.com/product/536336", "反馈中心"));
+              },
             ),
           ),
         ],
       ),
-      body: Card(
-        elevation: 7.0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ScreenUtil().setWidth(30)),
-        ),
-        margin: EdgeInsets.only(
-          left: ScreenUtil().setWidth(40),
-          top: ScreenUtil().setWidth(50),
-          right: ScreenUtil().setWidth(40),
-          bottom: ScreenUtil().setWidth(15),
-        ),
+      body: SingleChildScrollView(
         child: SizedBox(
-          width: ScreenUtil().setWidth(1200),
-          height: ScreenUtil().setWidth(1800),
-          child: Padding(
-            padding: const EdgeInsets.only(
-                left: 18.0, top: 25.0, right: 18.0, bottom: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "2023年01月18日",
-                  style: TextStyle(color: Colors.grey[700]),
-                ),
-                SizedBox(height: ScreenUtil().setWidth(50)),
-                Center(
-                  child: ExtendedImage.asset("assets/img/example1.jpg",
-                      width: ScreenUtil().setWidth(1000),
-                      height: ScreenUtil().setWidth(1000),
-                      fit: BoxFit.cover,
-                      shape: BoxShape.rectangle,
-                      border: Border.all(color: Colors.black12, width: 1),
-                      borderRadius:
-                          BorderRadius.circular(ScreenUtil().setWidth(21))),
-                ),
-                SizedBox(height: ScreenUtil().setHeight(40)),
-                GestureDetector(
-                  onTap: (){
-                    Get.to(() =>  const WebViewPage("https://baike.baidu.com/item/水稻稻瘟病","水稻稻瘟病"));
-                  },
-                  child: MyListTile(
-                    left: 0,
-                    leading: Column(
-                      children: [
-                        ExtendedImage.asset("assets/img/example1.jpg",
-                            width: ScreenUtil().setWidth(400),
-                            height: ScreenUtil().setWidth(400),
-                            fit: BoxFit.cover,
-                            shape: BoxShape.rectangle,
-                            border: Border.all(color: Colors.black12, width: 1),
-                            borderRadius:
-                                BorderRadius.circular(ScreenUtil().setWidth(21))),
-                        SizedBox(height: ScreenUtil().setWidth(20)),
-                        Text(
-                          "可信度30%",
-                          style: TextStyle(
-                              color: Colors.grey[500],
-                              fontSize: ScreenUtil().setSp(35)),
-                        ),
-                      ],
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: ExtendedImage.network(widget.disease.imgUrl!,
+                    fit: BoxFit.cover,
+                    height: ScreenUtil().setHeight(500),
+                    width: ScreenUtil().screenWidth,
+                    borderRadius:
+                        BorderRadius.circular(ScreenUtil().setWidth(21))),
+              ),
+              Container(
+                decoration: const BoxDecoration(color: Color(0xffFFFFFF)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Container(
+                      height: ScreenUtil().setHeight(60),
+                      width: ScreenUtil().screenWidth,
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(width: ScreenUtil().setWidth(40)),
+                          Text(
+                            widget.disease.date!,
+                            style: TextStyle(
+                                fontSize: ScreenUtil().setSp(45),
+                                color: Colors.grey),
+                          ),
+                        ],
+                      ),
                     ),
-                    center: SizedBox(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          SizedBox(
-                            height: ScreenUtil().setHeight(35),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Container(
+                      height: ScreenUtil().setHeight(60),
+                      width: ScreenUtil().screenWidth,
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(width: ScreenUtil().setWidth(40)),
+                          Text(
+                            widget.disease.name!,
+                            style: TextStyle(
+                                fontSize: ScreenUtil().setSp(55),
+                                color: Colors.black),
                           ),
-                          SizedBox(
-                            width: ScreenUtil().setWidth(400),
-                            child: Text(
-                              '水稻',
-                              style: TextStyle(
-                                  color: Colors.blueGrey,
-                                  fontSize: ScreenUtil().setSp(45)),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(
-                            height: ScreenUtil().setHeight(15),
-                          ),
-                          SizedBox(
-                            width: ScreenUtil().setWidth(400),
-                            child: Text(
-                              '叶片、茎秆、穗部',
-                              style: TextStyle(
-                                  color: Colors.blueGrey,
-                                  fontSize: ScreenUtil().setSp(45)),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(
-                            height: ScreenUtil().setHeight(15),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                '水稻稻瘟病',
-                                style:
-                                    TextStyle(fontSize: ScreenUtil().setSp(64)),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: ScreenUtil().setHeight(15),
-                          ),
-                          SizedBox(
-                            width: ScreenUtil().setWidth(400),
-                            child: Text(
-                              'PyriculariaoryaeCav',
-                              style: TextStyle(
-                                  color: Colors.blueGrey,
-                                  fontSize: ScreenUtil().setSp(50),
-                                  fontStyle: FontStyle.italic),
-                              overflow: TextOverflow.ellipsis,
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Container(
+                      height: ScreenUtil().setHeight(60),
+                      width: ScreenUtil().screenWidth,
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(width: ScreenUtil().setWidth(40)),
+                          Text(
+                            widget.disease.nameEng!,
+                            style: TextStyle(
+                              fontSize: ScreenUtil().setSp(55),
+                              color: Colors.grey[700],
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                )
-              ],
-            ),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Container(
+                      height: ScreenUtil().setHeight(60),
+                      width: ScreenUtil().screenWidth,
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(width: ScreenUtil().setWidth(40)),
+                          Text(
+                            "置信度$accuracy%",
+                            style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: ScreenUtil().setSp(55)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Container(
+                      height: ScreenUtil().setHeight(100),
+                      width: ScreenUtil().screenWidth,
+                      margin: const EdgeInsets.only(left: 10),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SizedBox(width: ScreenUtil().setWidth(40)),
+                          Text(
+                            "疾病种类: ",
+                            style: TextStyle(
+                                color: Colors.grey[700],
+                                fontSize: ScreenUtil().setSp(55)),
+                          ),
+                          SizedBox(width: ScreenUtil().setWidth(40)),
+                          buildLabel(context, widget.disease.type!)
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                  ],
+                ),
+              ),
+              SizedBox(height: ScreenUtil().setHeight(30)),
+              Container(
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 20),
+                width: ScreenUtil().screenWidth,
+                decoration: const BoxDecoration(color: Color(0xffFFFFFF)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "致病原因",
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(50),
+                          color: Colors.black),
+                    ),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Text(
+                      widget.disease.cause!,
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(45),
+                          color: Colors.grey[700]),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: ScreenUtil().setHeight(30)),
+              Container(
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 20),
+                width: ScreenUtil().screenWidth,
+                decoration: const BoxDecoration(color: Color(0xffFFFFFF)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "感染后果",
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(50),
+                          color: Colors.black),
+                    ),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Text(
+                      widget.disease.result!,
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(45),
+                          color: Colors.grey[700]),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: ScreenUtil().setHeight(30)),
+              Container(
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 20),
+                width: ScreenUtil().screenWidth,
+                decoration: const BoxDecoration(color: Color(0xffFFFFFF)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "疾病症状",
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(50),
+                          color: Colors.black),
+                    ),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Text(
+                      widget.disease.symptom!,
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(45),
+                          color: Colors.grey[700]),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: ScreenUtil().setHeight(30)),
+              Container(
+                padding: const EdgeInsets.only(
+                    top: 10, left: 20, right: 20, bottom: 20),
+                width: ScreenUtil().screenWidth,
+                decoration: const BoxDecoration(color: Color(0xffFFFFFF)),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "防治建议",
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(50),
+                          color: Colors.black),
+                    ),
+                    SizedBox(height: ScreenUtil().setHeight(20)),
+                    Text(
+                      widget.disease.suggestion!,
+                      style: TextStyle(
+                          fontSize: ScreenUtil().setSp(45),
+                          color: Colors.grey[700]),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: ScreenUtil().setHeight(40)),
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    var name = widget.disease.name!;
+                    Get.to(() => WebViewPage(
+                        "https://baike.baidu.com/item/$name", name));
+                  },
+                  child: Text("点击跳转百度百科 >",style: TextStyle(
+                      fontSize: ScreenUtil().setSp(55),
+                    color: Colors.blue),),
+                ),
+              ),
+              SizedBox(height: ScreenUtil().setHeight(40)),
+            ],
           ),
         ),
       ),
     );
+  }
+
+  TextButton buildLabel(BuildContext context, String label) {
+    return TextButton(
+        style: ButtonStyle(
+            shape: MaterialStateProperty.all(const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(60)))),
+            backgroundColor: MaterialStateProperty.all(
+                Theme.of(context).primaryColor.withOpacity(0.8))),
+        onPressed: () {},
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+                fontSize: ScreenUtil().setSp(55), color: Colors.white),
+          ),
+        ));
   }
 }

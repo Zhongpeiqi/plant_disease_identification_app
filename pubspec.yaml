@@ -42,11 +42,10 @@ dependencies:
 #屏幕适配
   flutter_screenutil:
   extended_nested_scroll_view:
-  r_scan:
+  font_awesome_flutter:
   logger:
   shared_preferences:
   image_picker:
-  image_editor:
   multi_image_picker:
   oktoast:
   flutter_spinkit:
@@ -55,6 +54,9 @@ dependencies:
   loading_more_list:
   extended_text:
   extended_text_field:
+  sticky_headers:
+  dio:
+  image_editor:
 
 dev_dependencies:
   flutter_test:
@@ -75,7 +77,6 @@ flutter:
   uses-material-design: true
   assets:
     - assets/img/
-    - assets/img/emotionIcons/
   fonts:
     - family: myicon
       fonts:

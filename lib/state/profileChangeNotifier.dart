@@ -19,7 +19,6 @@ class UserModel extends ProfileChangeNotifier {
 
   // APP是否登录(如果有用户信息，则证明登录过)
   bool get isLogin => user != null;
-
   //用户信息发生变化，更新用户信息并通知依赖它的子孙Widgets更新
   //条件成员访问符（?.）
   //和 . 类似，但是左边的操作对象不能为 null，

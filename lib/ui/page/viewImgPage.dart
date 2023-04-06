@@ -2,10 +2,9 @@ import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:plant_disease_identification_app/config/net_config.dart';
 
 class ViewImgPage extends StatefulWidget{
-  final String images;
+  final List images;
   final int index;
   final String postId;
   const ViewImgPage({Key? key, required this.images, required this.index, required this.postId}) : super(key: key);
@@ -37,7 +36,7 @@ class _ViewImgPageState extends State<ViewImgPage> {
             children: <Widget>[
               ExtendedImageGesturePageView.builder(
                 itemBuilder: (BuildContext context, int index) {
-                  var item = widget.images;
+                  var item = widget.images[index];
                   Widget image = ExtendedImage.network(
                     item,
                     fit: BoxFit.contain,

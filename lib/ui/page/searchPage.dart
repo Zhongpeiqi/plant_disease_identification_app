@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:plant_disease_identification_app/ui/page/commonUserPage.dart';
 import '../../config/my_icon.dart';
-import '../../listRepository/postRepository.dart';
-import '../../model/fakeData.dart';
 import '../../state/global.dart';
-import '../../widgets/postCard.dart';
+import 'feed/commonPostPage.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -22,7 +20,6 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
   late bool _showTabBar;
   late String str;
   final FocusNode _focusNode = FocusNode();
-  late final PostRepository  _postRepository =  PostRepository(1,2);
 
   @override
   void initState() {
@@ -67,17 +64,8 @@ class _SearchPageState extends State<SearchPage> with TickerProviderStateMixin {
           _tabController.animateTo(index);
         },
         children: <Widget>[
-          ListView(
-            children: [
-              PostCard(post: FakeData.posts[2],list: _postRepository,index: 1),
-            ],
-          ),
-          ListView(
-            children: [
-              PostCard(post: FakeData.posts[1],list: _postRepository,index: 1),
-            ],
-          )
-          // CommonUserPage(str: str),
+          CommonPostPage(type: 2,str: str),
+          CommonUserPage(str: str),
         ],
       ):_buildSearchHistory(),
     );

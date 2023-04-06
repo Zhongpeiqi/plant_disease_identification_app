@@ -1,42 +1,42 @@
 class User {
-  int? userId;
+  int? id;
   String? email;
   String? username;
   String? avatarUrl;
-  String? backImgUrl;
   int? postNum;
+  int? likedNum;
 
   User(
-      {this.userId,
+      {this.id,
         this.email,
         this.username,
         this.avatarUrl,
-        this.backImgUrl,
-        this.postNum,});
+        this.postNum,
+      this.likedNum});
 
   User.fromJson(Map<String, dynamic> json) {
-    userId = json['userId'];
+    id = json['id'];
     email = json['email'];
     username = json['username'];
     avatarUrl = json['avatarUrl'];
-    backImgUrl = json['backImgUrl'];
     postNum = json['postNum'];
+    likedNum = json['likedNum'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
-    data['userId'] = userId;
+    data['id'] = id;
     data['email'] = email;
     data['username'] = username;
     data['avatarUrl'] = avatarUrl;
-    data['backImgUrl'] = backImgUrl;
     data['postNum'] = postNum;
+    data['likedNum'] = likedNum;
     return data;
   }
 
   @override
   String toString() {
-    return 'User{userId: $userId, email: $email, username: $username, avatarUrl: $avatarUrl, backImgUrl: $backImgUrl, postNum: $postNum}';
+    return 'User{id: $id, email: $email, username: $username, avatarUrl: $avatarUrl, postNum: $postNum,,likedNum: $likedNum';
   }
 
 }

@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:plant_disease_identification_app/config/net_config.dart';
 import 'package:plant_disease_identification_app/state/profileChangeNotifier.dart';
+import 'package:plant_disease_identification_app/ui/homePage.dart';
 import 'package:plant_disease_identification_app/ui/page/changeAvatarPage.dart';
 import 'package:plant_disease_identification_app/utils/toast.dart';
 import 'package:plant_disease_identification_app/widgets/myListTile.dart';
 import 'package:provider/provider.dart';
+import '../../net/NetRequester.dart';
+import '../../state/global.dart';
 
 class UpdateUserDetailPage extends StatefulWidget {
   const UpdateUserDetailPage({Key? key}) : super(key: key);
@@ -23,7 +27,13 @@ class _UpdateUserDetailPageState extends State<UpdateUserDetailPage> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        leading: BackButton(
+          onPressed: (){
+            Get.to(() => const HomePage());
+          },
+        ),
         title: const Text('编辑资料'),
+        elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(-8),
           child: Container(),
@@ -37,74 +47,26 @@ class _UpdateUserDetailPageState extends State<UpdateUserDetailPage> {
               MyListTile(
                 left: 40,
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (context) => const ChangeAvatarPage(
-                                type: 1,
-                              )));
+                  Get.to(() => const ChangeAvatarPage(type: 1,));
                 },
                 leading: Text('头像',
                     style: TextStyle(fontSize: ScreenUtil().setSp(44))),
                 trailing: SizedBox(
                   height: 150.w,
                   width: 150.w,
-                  child: const CircleAvatar(
-                    backgroundImage: AssetImage("assets/img/author.png"),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(Global.profile.user!.avatarUrl!),
                   ),
                 ),
               ),
-              // MyListTile(
-              //   left: 40,
-              //   onTap: (){
-              //     Navigator.push(context,
-              //         CupertinoPageRoute(builder: (context) => const ChangeAvatarPage(
-              //             type: 2)));
-              //   },
-              //   leading: Text('个人主页背景', style: TextStyle(
-              //       fontSize: ScreenUtil().setSp(44))),
-              //   trailing: Container(
-              //     width: 150.w,
-              //     height: 150.w,
-              //     decoration: BoxDecoration(
-              //         borderRadius: BorderRadius.circular(ScreenUtil().setWidth(12)),
-              //         image: DecorationImage(
-              //             image: model.user.backImgUrl == null
-              //                 ?AssetImage("assets/images/back.jpg")
-              //                 :NetworkImage(NetConfig.ip+'/images/'+model.user.backImgUrl),
-              //             fit: BoxFit.cover
-              //         )
-              //     ),
-              //   ),
-              // ),
               Divider(indent: ScreenUtil().setWidth(40),endIndent: ScreenUtil().setWidth(40),height: 1,),
               MyListTile(
                 left: 40,
                 leading: const Text('用户名'),
                 trailing: SizedBox(
-                    height: 150.w, width: 150.w, child: const Center(child: Text('张三'))),
+                    height: 150.w, width: 150.w, child: Center(child: Text(model.user.username ?? "张三",))),
                 onTap: () {
-                  showEditUsername(context);
-                },
-              ),
-              Divider(indent: ScreenUtil().setWidth(40),endIndent: ScreenUtil().setWidth(40),height: 1,),
-              MyListTile(
-                left: 40,
-                leading: const Text('用户名'),
-                trailing: SizedBox(
-                    height: 150.w, width: 150.w, child: const Center(child: Text('张三'))),
-                onTap: () {
-                  showEditUsername(context);
-                },
-              ),
-              Divider(indent: ScreenUtil().setWidth(40),endIndent: ScreenUtil().setWidth(40),height: 1,),
-              MyListTile(
-                left: 40,
-                leading: const Text('用户名'),
-                trailing: SizedBox(
-                    height: 150.w, width: 150.w, child: const Center(child: Text('张三'))),
-                onTap: () {
-                  showEditUsername(context);
+                  showEditUsername(context,model);
                 },
               ),
               Divider(indent: ScreenUtil().setWidth(40),endIndent: ScreenUtil().setWidth(40),height: 1,),
@@ -116,9 +78,9 @@ class _UpdateUserDetailPageState extends State<UpdateUserDetailPage> {
   }
 
   //用户名
-  showEditUsername(BuildContext context) {
+  showEditUsername(BuildContext context,UserModel model) {
     TextEditingController controller = TextEditingController();
-    controller.text = '张三';
+    controller.text = Global.profile.user!.username!;
     showDialog(
         context: context,
         builder: (context) {
@@ -183,22 +145,24 @@ class _UpdateUserDetailPageState extends State<UpdateUserDetailPage> {
                             onPressed: () async {
                               if (controller.text.length > 15) {
                                 Toast.popToast('长度超出上限');
-                              } else {
-                                // var username =controller.text;
-                                // var map1={'username':username};
-                                // var res = await NetRequester.request('/user/isExistTheUsername',data: map1);
-                                // if(res['code'] == '0'){
-                                //   var map2 ={'userId':model.user.userId,
-                                //     'property': 'username',
-                                //     'value': username};
-                                //   var result = await NetRequester.request('/user/updateUserProperty',data: map2);
-                                //   if(result['code'] == '1'){
-                                //     model.user.username = username;
-                                    Navigator.pop(context);
-                                //   }
-                                // }else{
-                                //   Toast.popToast('昵称已存在，请换一个尝试');
-                                // }
+                              } else if(controller.text.isEmpty){
+                                Toast.popToast('请输入正确的名字');
+                              }else {
+                                Map<String, dynamic> map = {};
+                                map["id"] = Global.profile.user!.id;
+                                map["username"] = controller.text;
+                                map["avatarUrl"] = Global.profile.user!.avatarUrl;
+                                var result = await NetRequester.request(
+                                    '/user/updateUserDetail',
+                                    data: map);
+                                Toast.popToast(result.data['msg']);
+                                if(result.data['status'] == 200){
+                                  setState(() {});
+                                  var username = controller.text;
+                                  model.user.username = username;
+                                  model.notifyListeners();
+                                }
+                                Navigator.pop(context);
                               }
                             },
                           ),

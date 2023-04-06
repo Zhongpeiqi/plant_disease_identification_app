@@ -1,4 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:plant_disease_identification_app/config/my_icon.dart';
 import 'package:plant_disease_identification_app/data/tabData.dart';
 import 'package:plant_disease_identification_app/ui/page/feed/articlePage.dart';
@@ -6,6 +9,8 @@ import 'package:plant_disease_identification_app/ui/page/identifyPage.dart';
 import 'package:plant_disease_identification_app/ui/page/notePage.dart';
 import 'package:plant_disease_identification_app/ui/page/minePage.dart';
 import 'package:plant_disease_identification_app/ui/page/searchPage.dart';
+
+import '../utils/toast.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -17,9 +22,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentIndex = 0;
   final List<Widget> screens = const[
-    ArticlePage(),
+    ArticlePage(type: 1,),
     SearchPage(),
-    IdentifyPage(),
     NotePage(),
     MinePage(),
   ]; // to store nested tabs
@@ -28,7 +32,31 @@ class _HomePageState extends State<HomePage> {
   final _pageController = PageController(
     //初始索引
     initialPage: 0,
+    keepPage: false
   );
+
+  //记录每次选择的图片
+  late File _image;
+  final picker = ImagePicker();
+  Future getImage(bool isTakePhoto) async {
+    Navigator.pop(context);
+    try {
+      var image = await ImagePicker().pickImage(
+          source:isTakePhoto ? ImageSource.camera :ImageSource.gallery
+      );
+      if (image == null) {
+        return;
+      } else {
+        Toast.popToast("拍照成功");
+        setState(() {
+          // _image = image;
+          _image = File(image.path);
+        });
+      }
+    } catch (e) {
+      print("模拟器不支持相机！");
+    }
+  }
 
   @override
   void dispose() {
@@ -53,7 +81,9 @@ class _HomePageState extends State<HomePage> {
         children: screens,
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => onTap(2),
+        onPressed: (){
+          Get.to(() => const IdentifyPage());
+        },
         backgroundColor: Colors.green,
         child: const Icon(
           MyIcons.scan,
@@ -73,10 +103,10 @@ class _HomePageState extends State<HomePage> {
       onTap: (value){
         //控制pageView跳转到指定页面
         onTap(value);
-        // setState(() {
-        //   //更新索引值
-        //   _currentIndex = value;
-        // });
+        setState(() {
+          //更新索引值
+          _currentIndex = value;
+        });
       },
 
       items: datas.map((data){
@@ -102,5 +132,59 @@ class _HomePageState extends State<HomePage> {
     _pageController.jumpToPage(value);
   }
 
+  _takePhotoItem(String title, bool isTakePhoto) {
+    return GestureDetector(
+      child: ListTile(
+        leading: Icon(
+          isTakePhoto ? Icons.camera_alt : Icons.photo_library,
+        ),
+        title: Text(title),
+        onTap: () => getImage(isTakePhoto),
+      ),
+    );
+  }
+
+  ///底部弹框
+  _pickImage() {
+    showModalBottomSheet(context: context, builder: (context) => SizedBox(
+      height: 130,
+      child: Column(
+        children: <Widget>[
+          _takePhotoItem('拍照',true),
+          _takePhotoItem('从相册选择',false),
+        ],
+      ),
+    ));
+  }
+
+  /// 封装图片面板
+  _generateImages() {
+    return Stack(
+      children: <Widget>[
+        ClipRRect(
+          //圆角效果
+          borderRadius: BorderRadius.circular(10),
+          child: Image.file(_image,width: 120,height: 90,fit:BoxFit.cover),
+        ),
+        Positioned(
+          right: 5,
+          top: 5,
+          child: GestureDetector(
+            onTap: (){
+              Navigator.pop(context);
+            },
+            child: ClipOval(
+              //圆角删除按钮
+              child: Container(
+                padding: const EdgeInsets.all(5),
+                decoration: const BoxDecoration(color: Colors.black54),
+                child: const Icon(Icons.close,size: 20,color: Colors.white,),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
 }

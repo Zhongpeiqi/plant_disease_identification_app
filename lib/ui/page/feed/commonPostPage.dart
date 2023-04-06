@@ -4,15 +4,14 @@ import 'package:loading_more_list/loading_more_list.dart';
 
 import '../../../listRepository/postRepository.dart';
 import '../../../model/post.dart';
-import '../../../state/global.dart';
 import '../../../widgets/listIndicator.dart';
 import '../../../widgets/postCard.dart';
 
 class CommonPostPage extends StatefulWidget {
   final int type;
   final String str;
-  final String orderBy;
-  const CommonPostPage({Key? key, required this.type, required this.str, required this.orderBy}) : super(key: key);
+  String? orderBy;
+  CommonPostPage({Key? key, required this.type, required this.str,this.orderBy}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return _CommonPostPageState();
@@ -24,8 +23,7 @@ class _CommonPostPageState extends State<CommonPostPage> {
   @override
   void initState() {
     super.initState();
-    _postRepository =  PostRepository(Global.profile.user!.userId,
-        widget.type);
+    _postRepository =  PostRepository(1,widget.type,widget.str);
   }
 
   @override

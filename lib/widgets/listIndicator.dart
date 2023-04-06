@@ -101,7 +101,7 @@ Widget buildIndicator(BuildContext context, IndicatorStatus status,LoadingMoreBa
       break;
     case IndicatorStatus.empty:
       widget = Text(
-        "什么也没有找到(つд⊂)",style: TextStyle(color: Colors.grey,fontSize: ScreenUtil().setSp(46)),
+        "什么也没有找到(T_T)",style: TextStyle(color: Colors.grey,fontSize: ScreenUtil().setSp(46)),
       );
       widget = _setbackground(context,true, widget, double.infinity);
       widget = GestureDetector(

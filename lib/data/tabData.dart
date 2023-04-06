@@ -16,7 +16,7 @@ class TabData {
 const List<TabData> datas = <TabData>[
   TabData(index: 0, title: '文章', icon: Icons.book_outlined),
   TabData(index: 1, title: '搜索', icon: Icons.search),
-  TabData(index: 2, title: '识别', icon: Icons.add),
-  TabData(index: 3, title: '记录', icon: Icons.note_alt_outlined),
-  TabData(index: 4, title: '我的', icon: Icons.person_outline_outlined),
+  // TabData(index: 2, title: '识别', icon: Icons.add),
+  TabData(index: 2, title: '记录', icon: Icons.note_alt_outlined),
+  TabData(index: 3, title: '我的', icon: Icons.person_outline_outlined),
 ];

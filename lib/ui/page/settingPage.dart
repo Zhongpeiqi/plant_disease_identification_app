@@ -2,8 +2,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:plant_disease_identification_app/config/my_icon.dart';
+import 'package:plant_disease_identification_app/net/BaseBean.dart';
+import 'package:plant_disease_identification_app/net/NetRequester.dart';
+import 'package:plant_disease_identification_app/ui/page/auth/signin.dart';
 import 'package:plant_disease_identification_app/ui/page/updateUserDetailPage.dart';
+import 'package:plant_disease_identification_app/utils/toast.dart';
 import 'package:plant_disease_identification_app/widgets/myListTile.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,8 +42,7 @@ class SettingPage extends StatelessWidget {
               MyIcons.right, size: ScreenUtil().setWidth(50), color: Colors.grey
             ),
             onTap: () {
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => const UpdateUserDetailPage()));
+              Get.to(() => const UpdateUserDetailPage());
             },
           ),
           Divider(indent: ScreenUtil().setWidth(40)),
@@ -72,16 +76,21 @@ class SettingPage extends StatelessWidget {
               color: Colors.grey,
             ),
             onTap: () {
-              Navigator.push(context,
-                  CupertinoPageRoute(builder: (context) => const AboutPage()));
+              Get.to(() => const AboutPage());
             },
           ),
           Divider(indent: ScreenUtil().setWidth(40)),
           TextButton(
             onPressed: () async {
-              // SharedPreferences _prefs = await SharedPreferences.getInstance();
-              // _prefs.remove('profile');
-              Navigator.pushNamedAndRemoveUntil(context, 'login_page', (route) => route == null);
+              SharedPreferences _prefs = await SharedPreferences.getInstance();
+              var res = await NetRequester.dio.post("/user/logout");
+              if(res.data['status'] == 200){
+                _prefs.remove('token');
+                Get.to(() => const SignIn());
+                Toast.popToast("退出登录成功");
+              }else{
+                Toast.popToast("退出登录失败");
+              }
             },
             child: Text(
               '退出登录',

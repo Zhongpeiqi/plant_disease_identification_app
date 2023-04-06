@@ -25,7 +25,7 @@ class _CommonUserPageState extends State<CommonUserPage> {
   @override
   void initState() {
     super.initState();
-    _userRepository =  UserRepository(Global.profile.user!.userId!,4,widget.str);
+    _userRepository =  UserRepository(Global.profile.user!.id!,1,widget.str);
   }
 
   @override
@@ -41,7 +41,7 @@ class _CommonUserPageState extends State<CommonUserPage> {
         child: LoadingMoreList(
           ListConfig<User>(
             itemBuilder: (BuildContext context, User user, int index){
-              return ItemBuilder.buildUserRow(context,user,1);
+              return ItemBuilder.buildUserRow(context,user);
             },
             sourceList: _userRepository,
             indicatorBuilder: _buildIndicator,

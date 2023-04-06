@@ -156,7 +156,7 @@ class EmotionPad extends StatelessWidget {
   final TextEditingController controller;
 
   const EmotionPad({
-    required Key key,
+    Key? key,
     required this.active,
     required this.height,
     required this.controller,
